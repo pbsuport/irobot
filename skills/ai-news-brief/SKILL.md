@@ -9,20 +9,22 @@ description: 获取最新 AI 新闻速报。搜索并汇总近期最热门的人
 
 ## 工作流程
 
-1. 使用 `web_search` 搜索最新 AI 新闻
-2. 对重要新闻使用 `web_fetch` 获取详细内容
-3. 整理成简洁的新闻速报格式
+1. 使用 `web_fetch` 直接抓取可靠新闻源（跳过 web_search）
+2. 整理成简洁的新闻速报格式
 
-## 搜索策略
+## 抓取策略（快速模式）
+
+直接抓取以下新闻源，**并行执行**以提高速度：
 
 ```bash
-# 主要搜索词（英文源，覆盖面广）
-web_search "AI artificial intelligence news" --freshness pd --count 10
+# 主要来源 - The Verge AI 页面（内容最全）
+web_fetch "https://www.theverge.com/ai-artificial-intelligence" --maxChars 12000
 
-# 补充搜索（特定领域）
-web_search "OpenAI Google DeepMind Anthropic news" --freshness pd --count 5
-web_search "LLM GPT Claude Gemini news" --freshness pd --count 5
+# 补充来源 - Platformer（独家报道多）
+web_fetch "https://www.platformer.news/" --maxChars 4000
 ```
+
+**注意**：两个 web_fetch 调用应放在同一个工具调用块中并行执行，不要串行。
 
 ## 输出格式
 
@@ -60,12 +62,11 @@ web_search "LLM GPT Claude Gemini news" --freshness pd --count 5
 ## 参数
 
 - **数量**: 默认 3-5 条，可根据用户要求调整
-- **时间范围**: 默认过去 24 小时 (`pd`)，可选过去一周 (`pw`)
 - **语言**: 默认中文输出，可根据用户偏好调整
 
 ## 质量要求
 
-- 优先选择高影响力、高可信度的新闻源 (The Verge, TechCrunch, Reuters, etc.)
+- 优先选择高影响力、高可信度的新闻
 - 避免重复报道同一事件
 - 摘要要简洁但信息完整
 - 始终注明来源
